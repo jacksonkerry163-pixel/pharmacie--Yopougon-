@@ -67,7 +67,13 @@
                     displayPharmacies(filtered);
                 });
 
-            } catch (err) {
+            } catch (err) } catch (err) {
+    console.error("Erreur :", err);
+    container.innerHTML = `<p class="text-center text-red-500 p-4">Erreur : ${err.message || err}</p>`;
+}
+    console.error("Erreur :", err);
+    container.innerHTML = `<p class="text-center text-red-500 p-4">Erreur : ${err.message || err}</p>`;
+}
                 console.error('Erreur:', err);
                 container.innerHTML = '<p class="text-center text-red-500">Erreur lors du chargement des données.</p>';
             }
