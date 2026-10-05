@@ -38,7 +38,7 @@
             const container = document.getElementById('pharmaciesList');
             try {
                 const { data, error } = await supabase
-                    .from('Pharmacies')
+                    .from('pharmacies')
                     .select('*');
 
                 if (error) throw error;
