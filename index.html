@@ -16,7 +16,7 @@
     <main class="flex-grow mx-auto p-4 max-w-2xl w-full">
         <div class="mb-6">
             <input type="text" id="searchInput" placeholder="Rechercher par nom ou quartier..." 
-                class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                   class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
         </div>
 
         <div id="pharmaciesList" class="space-y-4">
@@ -30,7 +30,7 @@
 
     <script>
         const SUPABASE_URL = 'https://bbixpbaeskgsrjawjmpv.supabase.co';
-        const SUPABASE_ANON_KEY = '  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiaXhwYmFlc2tnc3JqYXdqbXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NTk4OTQsImV4cCI6MjEwNDQzNTg5NH0.rnX2zvR4dt-v9chnWFUUTt8qTGojHd7oiID6vQKvyIo ';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiaXhwYmFlc2tnc3JqYXdtdHB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMzg2MjAsImV4cCI6MjA1NjgxNDYyMH0.eyJjJ3Ijo5MjE2MywiaW5wdWgiLCJ0ciI6InB5cmVpbmVycyIsImFpZCI6IjIwMDkiLCJjcm15MiJ9.eyJuYyI6ImpWJ3I';
 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -52,8 +52,8 @@
                 afficherPharmacies(data);
 
             } catch (err) {
-                console.error("Erreur :", err);
-                container.innerHTML = `<p class="text-center text-red-500 p-4">Erreur : ${err.message || err}</p>`;
+                console.error('Erreur :', err);
+                container.innerHTML = `<p class="text-center text-red-500 p-4">Erreur : ${err.message}</p>`;
             }
         }
 
@@ -65,7 +65,7 @@
             }
             container.innerHTML = list.map(p => `
                 <div class="bg-white p-4 rounded-lg shadow border border-gray-100">
-                    <h3 class="font-bold text-lg text-emerald-700">${p.Nom_pharmacie || p.nom || 'Nom indisponible'}</h3>
+                    <h3 class="font-bold text-lg text-emerald-700">${p.Nom_pharmacie || p.nom || 'Pharmacie'}</h3>
                     <p class="text-gray-600 text-sm">Quartier : ${p.Quartier || p.quartier || 'Non spécifié'}</p>
                     <p class="text-gray-500 text-xs mt-1">Contact : ${p.Contact || p.contact || 'Non disponible'}</p>
                 </div>
