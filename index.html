@@ -3,21 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pharmacies de Garde - Yopougon</title>
+    <title>Pharmacies de Garde - Côte d'Ivoire</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
     <header class="bg-emerald-600 text-white shadow-md p-4 text-center">
-        <h1 class="text-2xl font-bold">Pharmacies de Garde Yopougon</h1>
-        <p class="text-sm text-emerald-100 mt-1">Trouvez rapidement une pharmacie de garde près de chez vous</p>
+        <h1 class="text-2xl font-bold">Pharmacies de Garde - CI</h1>
+        <p class="text-sm text-emerald-100 mt-1">Trouvez rapidement une pharmacie de garde partout en Côte d'Ivoire</p>
     </header>
 
     <main class="flex-grow mx-auto p-4 max-w-2xl w-full">
-        <!-- Barre de recherche -->
-        <div class="mb-4">
-            <input type="text" id="searchInput" placeholder="Rechercher par nom ou quartier..." 
-                   class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+        <!-- Filtres : Sélecteur de Commune + Barre de recherche -->
+        <div class="space-y-3 mb-4">
+            <!-- Sélecteur de Commune -->
+            <div>
+                <label for="communeSelect" class="block text-xs font-semibold text-gray-600 mb-1">Filtrer par Commune / Ville :</label>
+                <select id="communeSelect" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-gray-700">
+                    <option value="Toutes">🌍 Toutes les communes</option>
+                </select>
+            </div>
+
+            <!-- Barre de recherche -->
+            <div>
+                <input type="text" id="searchInput" placeholder="Rechercher par nom de pharmacie ou quartier..." 
+                       class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+            </div>
         </div>
 
         <!-- Compteur de résultats -->
@@ -30,21 +41,24 @@
     </main>
 
     <footer class="bg-white border-t py-4 text-center text-xs text-gray-500 mt-auto">
-        &copy; 2026 - Pharmacies Yopougon &bull; Données en temps réel
+        &copy; 2026 - Pharmacies de Garde CI &bull; Données en temps réel
     </footer>
 
     <script>
         const SUPABASE_URL = 'https://bbixpbaeskgsrjawjmpv.supabase.co';
-        const SUPABASE_ANON_KEY = '  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiaXhwYmFlc2tnc3JqYXdqbXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NTk4OTQsImV4cCI6MjEwNDQzNTg5NH0.rnX2zvR4dt-v9chnWFUUTt8qTGojHd7oiID6vQKvyIo   '; // Conservez votre clé actuelle
+        const SUPABASE_ANON_KEY = '   eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiaXhwYmFlc2tnc3JqYXdqbXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NTk4OTQsImV4cCI6MjEwNDQzNTg5NH0.rnX2zvR4dt-v9chnWFUUTt8qTGojHd7oiID6vQKvyIo  '; // Gardez bien votre clé actuelle
 
         const container = document.getElementById('pharmaciesList');
         const searchInput = document.getElementById('searchInput');
+        const communeSelect = document.getElementById('communeSelect');
         const searchCount = document.getElementById('searchCount');
+        
         let toutesLesPharmacies = [];
 
         async function chargerPharmacies() {
             try {
                 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                // Si votre table s'appelle autrement (ex: Pharmacies_CI), changez le nom ici :
                 const { data, error } = await supabase.from('Pharmacies').select('*');
                 
                 if (error) throw error;
@@ -56,7 +70,8 @@
                 }
 
                 toutesLesPharmacies = data;
-                afficherPharmacies(toutesLesPharmacies);
+                remplirMenuCommunes(toutesLesPharmacies);
+                filtrerEtAfficher();
 
             } catch (err) {
                 container.innerHTML = `
@@ -67,7 +82,26 @@
             }
         }
 
-        // Fonction pour formater joliment le numéro (ex: 2723451122 -> 27 23 45 11 22)
+        // Remplit dynamiquement la liste des communes dans le menu déroulant
+        function remplirMenuCommunes(pharmacies) {
+            const communesSet = new Set();
+            pharmacies.forEach(p => {
+                if (p.Commune) {
+                    communesSet.add(p.Commune.trim());
+                }
+            });
+
+            // Trier les communes par ordre alphabétique
+            const communesTriees = Array.from(communesSet).sort();
+
+            // Conserver l'option "Toutes" et ajouter les autres
+            communeSelect.innerHTML = '<option value="Toutes">🌍 Toutes les communes</option>';
+            communesTriees.forEach(commune => {
+                communeSelect.innerHTML += `<option value="${commune}">${commune}</option>`;
+            });
+        }
+
+        // Formater le numéro de téléphone
         function formaterTelephone(tel) {
             if (!tel) return '';
             let net = tel.toString().replace(/\s+/g, '');
@@ -77,8 +111,26 @@
             return tel;
         }
 
+        // Logique de filtrage combinée (Commune + Texte de recherche)
+        function filtrerEtAfficher() {
+            const communeChoisie = communeSelect.value;
+            const valeurRecherche = searchInput.value.toLowerCase().trim();
+
+            const pharmaciesFiltrees = toutesLesPharmacies.filter(p => {
+                const communePharmacie = (p.Commune || '').trim();
+                const matchCommune = (communeChoisie === 'Toutes' || communePharmacie === communeChoisie);
+
+                const nom = (p.Nom_pharmacie || '').toLowerCase();
+                const quartier = (p.Quartier || '').toLowerCase();
+                const matchTexte = nom.includes(valeurRecherche) || quartier.includes(valeurRecherche) || communePharmacie.toLowerCase().includes(valeurRecherche);
+
+                return matchCommune && matchTexte;
+            });
+
+            afficherPharmacies(pharmaciesFiltrees);
+        }
+
         function afficherPharmacies(pharmacies) {
-            // Mise à jour du compteur
             const count = pharmacies.length;
             searchCount.textContent = `${count} pharmacie${count > 1 ? 's' : ''} disponible${count > 1 ? 's' : ''}`;
 
@@ -92,6 +144,7 @@
 
             container.innerHTML = pharmacies.map(p => {
                 const nom = p.Nom_pharmacie || 'Pharmacie';
+                const commune = p.Commune || 'Commune non spécifiée';
                 const quartier = p.Quartier || 'Non spécifié';
                 const telephoneBrut = p['Téléphone 1'] || '';
                 
@@ -110,7 +163,7 @@
                         </p>`;
                 }
 
-                const queryMap = encodeURIComponent(`${nom} ${quartier} Yopougon Abidjan`);
+                const queryMap = encodeURIComponent(`${nom} ${quartier} ${commune} Côte d'Ivoire`);
                 const lienMaps = `https://www.google.com/maps/search/?api=1&query=${queryMap}`;
 
                 return `
@@ -120,9 +173,7 @@
                                 <h3 class="font-bold text-lg text-emerald-800">${nom}</h3>
                                 <span class="bg-green-100 text-green-800 text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide">De garde</span>
                             </div>
-                            <p class="text-sm text-gray-600 mt-1 flex items-center gap-1.5">
-                                <span>📍</span> Quartier : <strong class="text-gray-800">${quartier}</strong>
-                            </p>
+                            <p class="text-xs font-bold text-emerald-600 mt-1 uppercase tracking-wider">📍 ${commune} - ${quartier}</p>
                             <div class="mt-3">
                                 ${elementContact}
                             </div>
@@ -137,16 +188,11 @@
             }).join('');
         }
 
-        searchInput.addEventListener('input', (e) => {
-            const valeurRecherche = e.target.value.toLowerCase().trim();
-            const pharmaciesFiltrees = toutesLesPharmacies.filter(p => {
-                const nom = (p.Nom_pharmacie || '').toLowerCase();
-                const quartier = (p.Quartier || '').toLowerCase();
-                return nom.includes(valeurRecherche) || quartier.includes(valeurRecherche);
-            });
-            afficherPharmacies(pharmaciesFiltrees);
-        });
+        // Écouteurs d'événements pour les filtres
+        searchInput.addEventListener('input', filtrerEtAfficher);
+        communeSelect.addEventListener('change', filtrerEtAfficher);
 
+        // Chargement initial au démarrage
         chargerPharmacies();
     </script>
 </body>
