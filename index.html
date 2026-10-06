@@ -30,7 +30,7 @@
 
     <script>
         const SUPABASE_URL = 'https://bbixpbaeskgsrjawjmpv.supabase.co';
-        const SUPABASE_ANON_KEY = '   eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiaXhwYmFlc2tnc3JqYXdqbXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NTk4OTQsImV4cCI6MjEwNDQzNTg5NH0.rnX2zvR4dt-v9chnWFUUTt8qTGojHd7oiID6vQKvyIo  '; // Gardez bien votre clé actuelle
+        const SUPABASE_ANON_KEY = '  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiaXhwYmFlc2tnc3JqYXdqbXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NTk4OTQsImV4cCI6MjEwNDQzNTg5NH0.rnX2zvR4dt-v9chnWFUUTt8qTGojHd7oiID6vQKvyIo   '; // Gardez bien votre clé actuelle
 
         const container = document.getElementById('pharmaciesList');
         const searchInput = document.getElementById('searchInput');
@@ -67,19 +67,16 @@
             }
 
             container.innerHTML = pharmacies.map(p => {
-                // Utilisation stricte des noms de colonnes exacts de votre table Supabase
                 const nom = p.Nom_pharmacie || 'Pharmacie';
                 const quartier = p.Quartier || 'Non spécifié';
-                const contact = p.Contact || '';
+                const telephone = p['Téléphone 1'] || '';
                 
-                // Gestion du lien d'appel direct si le contact existe
                 let elementContact = `<p class="text-sm text-gray-600">📞 Contact : Non disponible</p>`;
-                if (contact) {
-                    const telClean = contact.replace(/\s+/g, '');
-                    elementContact = `<p class="text-sm text-gray-600">📞 Contact : <a href="tel:${telClean}" class="text-emerald-600 font-semibold underline hover:text-emerald-800">${contact}</a></p>`;
+                if (telephone) {
+                    const telClean = telephone.toString().replace(/\s+/g, '');
+                    elementContact = `<p class="text-sm text-gray-600">📞 Contact : <a href="tel:${telClean}" class="text-emerald-600 font-semibold underline hover:text-emerald-800">${telephone}</a></p>`;
                 }
 
-                // Génération du lien Google Maps
                 const queryMap = encodeURIComponent(`${nom} ${quartier} Yopougon Abidjan`);
                 const lienMaps = `https://www.google.com/maps/search/?api=1&query=${queryMap}`;
 
