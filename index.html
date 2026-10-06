@@ -30,7 +30,7 @@
 
     <script>
         const SUPABASE_URL = 'https://bbixpbaeskgsrjawjmpv.supabase.co';
-        const SUPABASE_ANON_KEY = '    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiaXhwYmFlc2tnc3JqYXdqbXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NTk4OTQsImV4cCI6MjEwNDQzNTg5NH0.rnX2zvR4dt-v9chnWFUUTt8qTGojHd7oiID6vQKvyIo '; // Gardez bien votre clé actuelle
+        const SUPABASE_ANON_KEY = '   eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiaXhwYmFlc2tnc3JqYXdqbXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NTk4OTQsImV4cCI6MjEwNDQzNTg5NH0.rnX2zvR4dt-v9chnWFUUTt8qTGojHd7oiID6vQKvyIo  '; // Remplacez bien par votre vraie clé
 
         const container = document.getElementById('pharmaciesList');
         const searchInput = document.getElementById('searchInput');
@@ -66,25 +66,47 @@
                 return;
             }
 
-            container.innerHTML = pharmacies.map(p => `
-                <div class="bg-white p-4 rounded-lg shadow-md border border-gray-100">
-                    <h3 class="font-bold text-lg text-emerald-700">${p.Nom_pharmacie || p.nom || 'Pharmacie'}</h3>
-                    <p class="text-sm text-gray-600 mt-1">📍 Quartier : ${p.Quartier || p.quartier || 'Non spécifié'}</p>
-                    <p class="text-sm text-gray-600">📞 Contact : ${p.Contact || p.telephone || 'Non disponible'}</p>
-                </div>
-            `).join('');
+            container.innerHTML = pharmacies.map(p => {
+                const nom = p.Nom_pharmacie || p.nom || 'Pharmacie';
+                const quartier = p.Quartier || p.quartier || 'Non spécifié';
+                const contactBrut = p.Contact || p.telephone || '';
+                
+                // Gestion du lien d'appel direct
+                let elementContact = `<p class="text-sm text-gray-600">📞 Contact : Non disponible</p>`;
+                if (contactBrut && contactBrut !== 'Non disponible') {
+                    // Nettoie les espaces pour le protocole tel:
+                    const telClean = contactBrut.replace(/\s+/g, '');
+                    elementContact = `<p class="text-sm text-gray-600">📞 Contact : <a href="tel:${telClean}" class="text-emerald-600 font-semibold underline hover:text-emerald-800">${contactBrut}</a></p>`;
+                }
+
+                // Génération du lien de géolocalisation/itinéraire Google Maps basé sur le nom et le quartier
+                const queryMap = encodeURIComponent(`${nom} ${quartier} Yopougon Abidjan`);
+                const lienMaps = `https://www.google.com/maps/search/?api=1&query=${queryMap}`;
+
+                return `
+                    <div class="bg-white p-4 rounded-lg shadow-md border border-gray-100 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-lg text-emerald-700">${nom}</h3>
+                            <p class="text-sm text-gray-600 mt-1">📍 Quartier : ${quartier}</p>
+                            ${elementContact}
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-100 flex justify-end">
+                            <a href="${lienMaps}" target="_blank" class="inline-flex items-center text-xs bg-emerald-50 text-emerald-700 font-medium px-3 py-2 rounded-lg border border-emerald-200 hover:bg-emerald-100 transition-colors">
+                                🗺️ Itinéraire / Maps
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
-        // Écouteur d'événements pour la recherche en temps réel
         searchInput.addEventListener('input', (e) => {
             const valeurRecherche = e.target.value.toLowerCase().trim();
-            
             const pharmaciesFiltrees = toutesLesPharmacies.filter(p => {
                 const nom = (p.Nom_pharmacie || p.nom || '').toLowerCase();
                 const quartier = (p.Quartier || p.quartier || '').toLowerCase();
                 return nom.includes(valeurRecherche) || quartier.includes(valeurRecherche);
             });
-
             afficherPharmacies(pharmaciesFiltrees);
         });
 
