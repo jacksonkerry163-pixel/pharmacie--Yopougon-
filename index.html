@@ -30,9 +30,11 @@
 
     <script>
         const SUPABASE_URL = 'https://bbixpbaeskgsrjawjmpv.supabase.co';
-        const SUPABASE_ANON_KEY = '   eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiaXhwYmFlc2tnc3JqYXdqbXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NTk4OTQsImV4cCI6MjEwNDQzNTg5NH0.rnX2zvR4dt-v9chnWFUUTt8qTGojHd7oiID6vQKvyIo '; // Remplacez ceci par votre vraie clé anon de Supabase
+        const SUPABASE_ANON_KEY = '    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiaXhwYmFlc2tnc3JqYXdqbXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NTk4OTQsImV4cCI6MjEwNDQzNTg5NH0.rnX2zvR4dt-v9chnWFUUTt8qTGojHd7oiID6vQKvyIo '; // Gardez bien votre clé actuelle
 
         const container = document.getElementById('pharmaciesList');
+        const searchInput = document.getElementById('searchInput');
+        let toutesLesPharmacies = [];
 
         async function chargerPharmacies() {
             try {
@@ -46,13 +48,8 @@
                     return;
                 }
 
-                container.innerHTML = data.map(p => `
-                    <div class="bg-white p-4 rounded-lg shadow-md border border-gray-100">
-                        <h3 class="font-bold text-lg text-emerald-700">${p.Nom_pharmacie || p.nom || 'Pharmacie'}</h3>
-                        <p class="text-sm text-gray-600 mt-1">📍 Quartier : ${p.Quartier || p.quartier || 'Non spécifié'}</p>
-                        <p class="text-sm text-gray-600">📞 Contact : ${p.Contact || p.telephone || 'Non disponible'}</p>
-                    </div>
-                `).join('');
+                toutesLesPharmacies = data;
+                afficherPharmacies(toutesLesPharmacies);
 
             } catch (err) {
                 container.innerHTML = `
@@ -62,6 +59,34 @@
                     </div>`;
             }
         }
+
+        function afficherPharmacies(pharmacies) {
+            if (pharmacies.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500">Aucune pharmacie ne correspond à votre recherche.</p>';
+                return;
+            }
+
+            container.innerHTML = pharmacies.map(p => `
+                <div class="bg-white p-4 rounded-lg shadow-md border border-gray-100">
+                    <h3 class="font-bold text-lg text-emerald-700">${p.Nom_pharmacie || p.nom || 'Pharmacie'}</h3>
+                    <p class="text-sm text-gray-600 mt-1">📍 Quartier : ${p.Quartier || p.quartier || 'Non spécifié'}</p>
+                    <p class="text-sm text-gray-600">📞 Contact : ${p.Contact || p.telephone || 'Non disponible'}</p>
+                </div>
+            `).join('');
+        }
+
+        // Écouteur d'événements pour la recherche en temps réel
+        searchInput.addEventListener('input', (e) => {
+            const valeurRecherche = e.target.value.toLowerCase().trim();
+            
+            const pharmaciesFiltrees = toutesLesPharmacies.filter(p => {
+                const nom = (p.Nom_pharmacie || p.nom || '').toLowerCase();
+                const quartier = (p.Quartier || p.quartier || '').toLowerCase();
+                return nom.includes(valeurRecherche) || quartier.includes(valeurRecherche);
+            });
+
+            afficherPharmacies(pharmaciesFiltrees);
+        });
 
         chargerPharmacies();
     </script>
