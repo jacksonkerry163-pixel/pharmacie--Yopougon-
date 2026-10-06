@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pharmacies de Garde - Yopougon</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
     <header class="bg-emerald-600 text-white shadow-md p-4 text-center">
@@ -20,43 +19,17 @@
         </div>
 
         <div id="pharmaciesList" class="space-y-4">
-            <p class="text-center text-gray-500">Chargement des pharmacies...</p>
+            <!-- Affichage direct de test -->
+            <div class="bg-white p-4 rounded-lg shadow-md border border-gray-100">
+                <h3 class="font-bold text-lg text-emerald-700">Pharmacie de Test (Yopougon)</h3>
+                <p class="text-sm text-gray-600 mt-1">📍 Quartier : Niangon</p>
+                <p class="text-sm text-gray-600">📞 Contact : 21 00 00 00</p>
+            </div>
         </div>
     </main>
 
     <footer class="bg-white border-t py-4 text-center text-xs text-gray-500">
         &copy; 2026 - Pharmacies Yopougon
     </footer>
-
-    <script>
-        const SUPABASE_URL = 'https://bbixpbaeskgsrjawjmpv.supabase.co';
-        const SUPABASE_ANON_KEY = ' eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiaXhwYmFlc2tnc3JqYXdqbXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NTk4OTQsImV4cCI6MjEwNDQzNTg5NH0.rnX2zvR4dt-v9chnWFUUTt8qTGojHd7oiID6vQKvyIo ';
-
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        async function chargerPharmacies() {
-            const container = document.getElementById('pharmaciesList');
-            try {
-                const { data, error } = await supabase.from('Pharmacies').select('*');
-                if (error) throw error;
-                
-                if (!data || data.length === 0) {
-                    container.innerHTML = '<p class="text-center text-gray-500">Aucune pharmacie trouvée.</p>';
-                    return;
-                }
-
-                container.innerHTML = data.map(p => `
-                    <div class="bg-white p-4 rounded-lg shadow-md border border-gray-100">
-                        <h3 class="font-bold text-lg text-emerald-700">${p.Nom_pharmacie || 'Pharmacie'}</h3>
-                    </div>
-                `).join('');
-            } catch (err) {
-                console.error('Erreur :', err);
-                container.innerHTML = `<p class="text-center text-red-500">Erreur : ${err.message}</p>`;
-            }
-        }
-
-        chargerPharmacies();
-    </script>
 </body>
 </html>
