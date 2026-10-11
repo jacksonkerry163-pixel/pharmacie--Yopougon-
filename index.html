@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pharmacies de Garde - Côte d'Ivoire</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
     </style>
@@ -28,7 +27,7 @@
 
             <div>
                 <label for="searchInput" class="block text-xs font-semibold text-gray-600 mb-1">🔍 Recherche rapide :</label>
-                <input type="text" id="searchInput" placeholder="Rechercher par quartier, pharmacie ou ville (ex: Bouaké, Niangon, Yopougon)..." 
+                <input type="text" id="searchInput" placeholder="Rechercher par quartier, pharmacie ou ville (ex: Bardot, Bouaké, Niangon)..." 
                        class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-sm">
             </div>
         </div>
@@ -45,7 +44,7 @@
     </footer>
 
     <script>
-        // Base de secours complète intégrée
+        // Base de secours complète et fluide sans dépendance réseau
         const BASE_PHARMACIES = [
             // --- BOUAKÉ ---
             { Nom_pharmacie: "Pharmacie TSF", Quartier: "Air France 2", Commune: "Bouaké", "Téléphone 1": "2731631055" },
@@ -236,7 +235,7 @@
             }).join('');
         }
 
-        // Initialisation immédiate sans attente réseau
+        // Execution instantanée dès l'ouverture
         remplirMenuCommunes(pharmaciesAffichees);
         filtrerEtAfficher();
 
