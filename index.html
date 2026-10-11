@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#059669">
+    <meta name="description" content="Pharmacies de Garde en Côte d'Ivoire - Retrouvez rapidement une pharmacie ouverte près de chez vous.">
     <title>Pharmacies de Garde - Côte d'Ivoire</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -11,12 +13,32 @@
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
 
-    <header class="bg-emerald-600 text-white shadow-md p-4 text-center sticky top-0 z-50">
-        <h1 class="text-2xl font-bold tracking-tight">Pharmacies de Garde CI 🇨🇮</h1>
-        <p class="text-xs text-emerald-100 mt-1">Trouvez rapidement une pharmacie ouverte en Côte d'Ivoire</p>
+    <header class="bg-emerald-600 text-white shadow-md p-4 sticky top-0 z-50">
+        <div class="max-w-2xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2">
+                    Pharmacies de Garde CI 🇨🇮
+                </h1>
+                <p class="text-xs text-emerald-100 mt-0.5">Trouvez rapidement une pharmacie ouverte en Côte d'Ivoire</p>
+            </div>
+            <!-- Bouton d'installation PWA -->
+            <button id="pwaInstallBtn" onclick="installerPWA()" class="hidden bg-yellow-400 hover:bg-yellow-500 text-emerald-950 font-bold text-xs px-3 py-2 rounded-lg shadow-sm transition-all flex items-center gap-1 animate-pulse">
+                📲 Installer
+            </button>
+        </div>
     </header>
 
     <main class="flex-grow mx-auto p-4 max-w-2xl w-full">
+        <!-- Numéros d'urgence rapide -->
+        <div class="mb-4 bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex justify-around items-center text-xs font-semibold text-emerald-900">
+            <span class="text-gray-600">🚨 Urgences :</span>
+            <a href="tel:185" class="hover:underline text-emerald-700">SAMU: 185</a>
+            <span>•</span>
+            <a href="tel:180" class="hover:underline text-emerald-700">Pompiers: 180</a>
+            <span>•</span>
+            <a href="tel:170" class="hover:underline text-emerald-700">Police: 170</a>
+        </div>
+
         <div class="space-y-3 mb-4 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
             <div>
                 <label for="communeSelect" class="block text-xs font-semibold text-gray-600 mb-1">📍 Choisir la Ville / Commune :</label>
@@ -27,7 +49,7 @@
 
             <div>
                 <label for="searchInput" class="block text-xs font-semibold text-gray-600 mb-1">🔍 Recherche rapide :</label>
-                <input type="text" id="searchInput" placeholder="Rechercher par quartier, pharmacie ou ville (ex: Bardot, Bouaké, Niangon)..." 
+                <input type="text" id="searchInput" placeholder="Rechercher par quartier, pharmacie ou ville (ex: Angré, Niangon, Bardot, Bouaké)..." 
                        class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-sm">
             </div>
         </div>
@@ -44,8 +66,49 @@
     </footer>
 
     <script>
-        // Base de secours complète et fluide sans dépendance réseau
+        // Base de données enrichie des pharmacies de garde en Côte d'Ivoire
         const BASE_PHARMACIES = [
+            // --- ABIDJAN : COCODY ---
+            { Nom_pharmacie: "Pharmacie Des 2 Plateaux", Quartier: "2 Plateaux - ENA", Commune: "Cocody", "Téléphone 1": "2722415020" },
+            { Nom_pharmacie: "Pharmacie Saint Jean", Quartier: "Saint Jean", Commune: "Cocody", "Téléphone 1": "2722442510" },
+            { Nom_pharmacie: "Pharmacie M'Pouto", Quartier: "M'Pouto", Commune: "Cocody", "Téléphone 1": "2722438800" },
+            { Nom_pharmacie: "Pharmacie Riviera 3", Quartier: "Riviera 3", Commune: "Cocody", "Téléphone 1": "2722471200" },
+            { Nom_pharmacie: "Pharmacie Angré 8ème Tranche", Quartier: "Angré", Commune: "Cocody", "Téléphone 1": "2722503200" },
+            { Nom_pharmacie: "Pharmacie Latrille", Quartier: "Angré Nouveau CHU", Commune: "Cocody", "Téléphone 1": "2722521020" },
+            { Nom_pharmacie: "Pharmacie Blockhauss", Quartier: "Blockhauss", Commune: "Cocody", "Téléphone 1": "2722489000" },
+
+            // --- ABIDJAN : YOPOUGON ---
+            { Nom_pharmacie: "Pharmacie Keneyah", Quartier: "Siporex", Commune: "Yopougon", "Téléphone 1": "2723456789" },
+            { Nom_pharmacie: "Pharmacie Niangon", Quartier: "Niangon Sud", Commune: "Yopougon", "Téléphone 1": "2723512030" },
+            { Nom_pharmacie: "Pharmacie Bel Air", Quartier: "Toits Rouges", Commune: "Yopougon", "Téléphone 1": "2723468090" },
+            { Nom_pharmacie: "Pharmacie Saint André", Quartier: "Gare de Basset", Commune: "Yopougon", "Téléphone 1": "2723451010" },
+            { Nom_pharmacie: "Pharmacie Maranatha", Quartier: "Maroc", Commune: "Yopougon", "Téléphone 1": "2723524050" },
+
+            // --- ABIDJAN : MARCORY ---
+            { Nom_pharmacie: "Pharmacie Zone 4", Quartier: "Zone 4C", Commune: "Marcory", "Téléphone 1": "2721351234" },
+            { Nom_pharmacie: "Pharmacie Ste Thérèse", Quartier: "Sainte Thérèse", Commune: "Marcory", "Téléphone 1": "2721268010" },
+            { Nom_pharmacie: "Pharmacie du Boulevard", Quartier: "Boulevard de Marseille", Commune: "Marcory", "Téléphone 1": "2721254030" },
+            { Nom_pharmacie: "Pharmacie Anoumabo", Quartier: "Anoumabo", Commune: "Marcory", "Téléphone 1": "2721289000" },
+
+            // --- ABIDJAN : PLATEAU ---
+            { Nom_pharmacie: "Pharmacie du Plateau", Quartier: "Avenue Chardy", Commune: "Plateau", "Téléphone 1": "2720210000" },
+            { Nom_pharmacie: "Pharmacie de la Mairie", Quartier: "Mairie", Commune: "Plateau", "Téléphone 1": "2720321510" },
+
+            // --- ABIDJAN : KOUMASSI ---
+            { Nom_pharmacie: "Pharmacie du Grand Marché", Quartier: "Grand Marché", Commune: "Koumassi", "Téléphone 1": "2721360010" },
+            { Nom_pharmacie: "Pharmacie Prodomo", Quartier: "Camp Commando", Commune: "Koumassi", "Téléphone 1": "2721365020" },
+
+            // --- ABIDJAN : PORT-BOUËT ---
+            { Nom_pharmacie: "Pharmacie de l'Aéroport", Quartier: "Aérocanal", Commune: "Port-Bouët", "Téléphone 1": "2721278050" },
+            { Nom_pharmacie: "Pharmacie Phare", Quartier: "Gonzagueville", Commune: "Port-Bouët", "Téléphone 1": "2721213010" },
+
+            // --- ABIDJAN : ABOBO & ADJAMÉ & TREICHVILLE ---
+            { Nom_pharmacie: "Pharmacie de la Mairie Abobo", Quartier: "Samaké", Commune: "Abobo", "Téléphone 1": "2724391000" },
+            { Nom_pharmacie: "Pharmacie Avocatier", Quartier: "Avocatier", Commune: "Abobo", "Téléphone 1": "2724385020" },
+            { Nom_pharmacie: "Pharmacie Liberté", Quartier: "Gare Nord", Commune: "Adjamé", "Téléphone 1": "2720371040" },
+            { Nom_pharmacie: "Pharmacie Belleville", Quartier: "Arras", Commune: "Treichville", "Téléphone 1": "2721243020" },
+            { Nom_pharmacie: "Pharmacie Saint Paul", Quartier: "Avenue 16", Commune: "Treichville", "Téléphone 1": "2721245080" },
+
             // --- BOUAKÉ ---
             { Nom_pharmacie: "Pharmacie TSF", Quartier: "Air France 2", Commune: "Bouaké", "Téléphone 1": "2731631055" },
             { Nom_pharmacie: "Pharmacie KoKo", Quartier: "Koko", Commune: "Bouaké", "Téléphone 1": "2731631100" },
@@ -69,61 +132,45 @@
             { Nom_pharmacie: "Pharmacie du Poro", Quartier: "Résidentiel", Commune: "Korhogo", "Téléphone 1": "2736861020" },
             { Nom_pharmacie: "Pharmacie du Marché Korhogo", Quartier: "Koko", Commune: "Korhogo", "Téléphone 1": "2736862540" },
 
-            // --- ABENGOUROU ---
-            { Nom_pharmacie: "Pharmacie de l'Indénié", Quartier: "Indénié", Commune: "Abengourou", "Téléphone 1": "2735913604" },
-            { Nom_pharmacie: "Pharmacie Agni", Quartier: "Agnikro", Commune: "Abengourou", "Téléphone 1": "2735911020" },
-
-            // --- GAGNOA ---
-            { Nom_pharmacie: "Pharmacie de la Paix", Quartier: "Babre", Commune: "Gagnoa", "Téléphone 1": "2732771540" },
-            { Nom_pharmacie: "Pharmacie du Fromager", Quartier: "Garahio", Commune: "Gagnoa", "Téléphone 1": "2732773080" },
-
-            // --- MAN ---
-            { Nom_pharmacie: "Pharmacie des 18 Montagnes", Quartier: "Commerce", Commune: "Man", "Téléphone 1": "2733791020" },
-            { Nom_pharmacie: "Pharmacie du Tonkpi", Quartier: "Gbeupleu", Commune: "Man", "Téléphone 1": "2733792100" },
-
-            // --- ABIDJAN : COCODY ---
-            { Nom_pharmacie: "Pharmacie Des 2 Plateaux", Quartier: "2 Plateaux", Commune: "Cocody", "Téléphone 1": "2722415020" },
-            { Nom_pharmacie: "Pharmacie Saint Jean", Quartier: "Saint Jean", Commune: "Cocody", "Téléphone 1": "2722442510" },
-            { Nom_pharmacie: "Pharmacie M'Pouto", Quartier: "M'Pouto", Commune: "Cocody", "Téléphone 1": "2722438800" },
-            { Nom_pharmacie: "Pharmacie Riviera 3", Quartier: "Riviera 3", Commune: "Cocody", "Téléphone 1": "2722471200" },
-            { Nom_pharmacie: "Pharmacie Angré 8ème Tranche", Quartier: "Angré", Commune: "Cocody", "Téléphone 1": "2722503200" },
-
-            // --- ABIDJAN : MARCORY ---
-            { Nom_pharmacie: "Pharmacie Zone 4", Quartier: "Zone 4", Commune: "Marcory", "Téléphone 1": "2721351234" },
-            { Nom_pharmacie: "Pharmacie Ste Thérèse", Quartier: "Sainte Thérèse", Commune: "Marcory", "Téléphone 1": "2721268010" },
-            { Nom_pharmacie: "Pharmacie du Boulevard", Quartier: "Boulevard de Marseille", Commune: "Marcory", "Téléphone 1": "2721254030" },
-
-            // --- ABIDJAN : PLATEAU ---
-            { Nom_pharmacie: "Pharmacie du Plateau", Quartier: "Centre des Affaires", Commune: "Plateau", "Téléphone 1": "2720210000" },
-            { Nom_pharmacie: "Pharmacie de la Mairie", Quartier: "Mairie", Commune: "Plateau", "Téléphone 1": "2720321510" },
-
-            // --- ABIDJAN : YOPOUGON ---
-            { Nom_pharmacie: "Pharmacie Keneyah", Quartier: "Siporex", Commune: "Yopougon", "Téléphone 1": "2723456789" },
-            { Nom_pharmacie: "Pharmacie Niangon", Quartier: "Niangon Sud", Commune: "Yopougon", "Téléphone 1": "2723512030" },
-            { Nom_pharmacie: "Pharmacie Bel Air", Quartier: "Toits Rouges", Commune: "Yopougon", "Téléphone 1": "2723468090" },
-
-            // --- ABIDJAN : KOUMASSI / PORT-BOUËT / TREICHVILLE / ADJAMÉ / ABOBO ---
-            { Nom_pharmacie: "Pharmacie du Grand Marché", Quartier: "Grand Marché", Commune: "Koumassi", "Téléphone 1": "2721360010" },
-            { Nom_pharmacie: "Pharmacie de l'Aéroport", Quartier: "Aérocanal", Commune: "Port-Bouët", "Téléphone 1": "2721278050" },
-            { Nom_pharmacie: "Pharmacie Belleville", Quartier: "Arras", Commune: "Treichville", "Téléphone 1": "2721243020" },
-            { Nom_pharmacie: "Pharmacie Liberté", Quartier: "Gare Nord", Commune: "Adjamé", "Téléphone 1": "2720371040" },
-            { Nom_pharmacie: "Pharmacie de la Mairie Abobo", Quartier: "Samaké", Commune: "Abobo", "Téléphone 1": "2724391000" },
-
             // --- AUTRES VILLES ---
-            { Nom_pharmacie: "Pharmacie de Bassam", Quartier: "Quartier France", Commune: "Grand-Bassam", "Téléphone 1": "2130102030" },
-            { Nom_pharmacie: "Pharmacie du Léboutou", Quartier: "Commerce", Commune: "Dabou", "Téléphone 1": "23571020" },
-            { Nom_pharmacie: "Pharmacie d'Agboville", Quartier: "Résidentiel", Commune: "Agboville", "Téléphone 1": "23541010" },
+            { Nom_pharmacie: "Pharmacie de l'Indénié", Quartier: "Indénié", Commune: "Abengourou", "Téléphone 1": "2735913604" },
+            { Nom_pharmacie: "Pharmacie de la Paix", Quartier: "Babre", Commune: "Gagnoa", "Téléphone 1": "2732771540" },
+            { Nom_pharmacie: "Pharmacie des 18 Montagnes", Quartier: "Commerce", Commune: "Man", "Téléphone 1": "2733791020" },
+            { Nom_pharmacie: "Pharmacie de Bassam", Quartier: "Quartier France", Commune: "Grand-Bassam", "Téléphone 1": "2721301020" },
+            { Nom_pharmacie: "Pharmacie du Léboutou", Quartier: "Commerce", Commune: "Dabou", "Téléphone 1": "2723571020" },
             { Nom_pharmacie: "Pharmacie de Soubré", Quartier: "Naio", Commune: "Soubré", "Téléphone 1": "2734721020" },
             { Nom_pharmacie: "Pharmacie du Zanzan", Quartier: "Commerce", Commune: "Bondoukou", "Téléphone 1": "2735921030" },
-            { Nom_pharmacie: "Pharmacie du Lôh-Djiboua", Quartier: "Bada", Commune: "Divo", "Téléphone 1": "2732761010" }
+            { Nom_pharmacie: "Pharmacie du Lôh-Djiboua", Quartier: "Bada", Commune: "Divo", "Téléphone 1": "2732761010" },
+            { Nom_pharmacie: "Pharmacie d'Agboville", Quartier: "Résidentiel", Commune: "Agboville", "Téléphone 1": "2723541010" }
         ];
 
         let pharmaciesAffichees = [...BASE_PHARMACIES];
+        let deferredPrompt = null;
 
         const container = document.getElementById('pharmaciesList');
         const searchInput = document.getElementById('searchInput');
         const communeSelect = document.getElementById('communeSelect');
         const searchCount = document.getElementById('searchCount');
+        const pwaBtn = document.getElementById('pwaInstallBtn');
+
+        // Capture de l'événement d'installation PWA
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            pwaBtn.classList.remove('hidden');
+        });
+
+        function installerPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        pwaBtn.classList.add('hidden');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
 
         function normaliserTexte(str) {
             return (str || '')
@@ -235,7 +282,7 @@
             }).join('');
         }
 
-        // Execution instantanée dès l'ouverture
+        // Initialisation instantanée
         remplirMenuCommunes(pharmaciesAffichees);
         filtrerEtAfficher();
 
