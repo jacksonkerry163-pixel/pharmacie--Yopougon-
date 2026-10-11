@@ -45,14 +45,7 @@
     </footer>
 
     <script>
-        const SUPABASE_URL = 'https://bbixpbaeskgsrjawjmpv.supabase.co';
-        const SUPABASE_ANON_KEY = '  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiaXhwYmFlc2tnc3JqYXdqbXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NTk4OTQsImV4cCI6MjEwNDQzNTg5NH0.rnX2zvR4dt-v9chnWFUUTt8qTGojHd7oiID6vQKvyIo  ';
-
-        const container = document.getElementById('pharmaciesList');
-        const searchInput = document.getElementById('searchInput');
-        const communeSelect = document.getElementById('communeSelect');
-        const searchCount = document.getElementById('searchCount');
-
+        // Base de secours complète intégrée
         const BASE_PHARMACIES = [
             // --- BOUAKÉ ---
             { Nom_pharmacie: "Pharmacie TSF", Quartier: "Air France 2", Commune: "Bouaké", "Téléphone 1": "2731631055" },
@@ -128,23 +121,10 @@
 
         let pharmaciesAffichees = [...BASE_PHARMACIES];
 
-        async function chargerPharmacies() {
-            if (window.supabase && SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== 'VOTRE_CLE_ANON_ICI') {
-                try {
-                    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                    const { data, error } = await supabase.from('Pharmacies').select('*');
-                    
-                    if (!error && data && data.length > 0) {
-                        pharmaciesAffichees = data;
-                    }
-                } catch (err) {
-                    console.warn("Utilisation de la base de secours locale.");
-                }
-            }
-            
-            remplirMenuCommunes(pharmaciesAffichees);
-            filtrerEtAfficher();
-        }
+        const container = document.getElementById('pharmaciesList');
+        const searchInput = document.getElementById('searchInput');
+        const communeSelect = document.getElementById('communeSelect');
+        const searchCount = document.getElementById('searchCount');
 
         function normaliserTexte(str) {
             return (str || '')
@@ -157,9 +137,8 @@
 
         function remplirMenuCommunes(pharmacies) {
             const communesSet = new Set();
-            
             pharmacies.forEach(p => {
-                const zone = p.Commune || p.commune || p.Ville || p.ville || p.Localite || p.localite || '';
+                const zone = p.Commune || p.commune || p.Ville || p.ville || '';
                 if (zone.toString().trim()) {
                     const zonePropre = zone.toString().trim();
                     const zoneFormatee = zonePropre.charAt(0).toUpperCase() + zonePropre.slice(1);
@@ -168,7 +147,6 @@
             });
 
             const communesTriees = Array.from(communesSet).sort((a, b) => a.localeCompare(b, 'fr'));
-
             communeSelect.innerHTML = '<option value="Toutes">🌍 Toutes les villes et communes</option>';
             communesTriees.forEach(commune => {
                 const opt = document.createElement('option');
@@ -192,10 +170,8 @@
             const valeurRecherche = normaliserTexte(searchInput.value);
 
             const pharmaciesFiltrees = pharmaciesAffichees.filter(p => {
-                const zonePharmacie = normaliserTexte(p.Commune || p.commune || p.Ville || p.ville || p.Localite || '');
-                const zoneChoisiePropre = normaliserTexte(zoneChoisie);
-                
-                const matchZone = (zoneChoisie === 'Toutes' || zonePharmacie === zoneChoisiePropre);
+                const zonePharmacie = normaliserTexte(p.Commune || p.commune || p.Ville || p.ville || '');
+                const matchZone = (zoneChoisie === 'Toutes' || zonePharmacie === normaliserTexte(zoneChoisie));
 
                 let matchTexte = true;
                 if (valeurRecherche) {
@@ -228,7 +204,6 @@
                 const telephoneBrut = p['Téléphone 1'] || p['telephone 1'] || p['Telephone'] || p['Téléphone'] || p['Tel'] || p['tel'] || '';
                 
                 let elementContact = `<p class="text-xs text-gray-400 italic">📞 Contact non disponible</p>`;
-                
                 if (telephoneBrut) {
                     const telClean = telephoneBrut.toString().replace(/\s+/g, '');
                     const telJoli = formaterTelephone(telephoneBrut);
@@ -261,10 +236,12 @@
             }).join('');
         }
 
+        // Initialisation immédiate sans attente réseau
+        remplirMenuCommunes(pharmaciesAffichees);
+        filtrerEtAfficher();
+
         searchInput.addEventListener('input', filtrerEtAfficher);
         communeSelect.addEventListener('change', filtrerEtAfficher);
-
-        chargerPharmacies();
     </script>
 </body>
 </html>
