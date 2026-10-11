@@ -14,7 +14,6 @@
     </header>
 
     <main class="flex-grow mx-auto p-4 max-w-2xl w-full">
-        <!-- Filtres : Sélecteur de Ville/Commune + Barre de recherche globale -->
         <div class="space-y-3 mb-4 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
             <div>
                 <label for="communeSelect" class="block text-xs font-semibold text-gray-600 mb-1">📍 Choisir la Ville / Commune :</label>
@@ -25,15 +24,13 @@
 
             <div>
                 <label for="searchInput" class="block text-xs font-semibold text-gray-600 mb-1">🔍 Recherche rapide :</label>
-                <input type="text" id="searchInput" placeholder="Rechercher par quartier, pharmacie ou ville..." 
+                <input type="text" id="searchInput" placeholder="Rechercher par quartier, pharmacie ou ville (ex: Bouaké)..." 
                        class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-sm">
             </div>
         </div>
 
-        <!-- Compteur de résultats -->
         <div id="searchCount" class="text-xs text-gray-500 mb-3 px-1 font-semibold"></div>
 
-        <!-- Liste des pharmacies -->
         <div id="pharmaciesList" class="space-y-3">
             <p class="text-center text-gray-500 py-8">Chargement des pharmacies...</p>
         </div>
@@ -45,15 +42,50 @@
 
     <script>
         const SUPABASE_URL = 'https://bbixpbaeskgsrjawjmpv.supabase.co';
-        const SUPABASE_ANON_KEY = '  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiaXhwYmFlc2tnc3JqYXdqbXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NTk4OTQsImV4cCI6MjEwNDQzNTg5NH0.rnX2zvR4dt-v9chnWFUUTt8qTGojHd7oiID6vQKvyIo ';
+        const SUPABASE_ANON_KEY = '   eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiaXhwYmFlc2tnc3JqYXdqbXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NTk4OTQsImV4cCI6MjEwNDQzNTg5NH0.rnX2zvR4dt-v9chnWFUUTt8qTGojHd7oiID6vQKvyIo ';
 
         const container = document.getElementById('pharmaciesList');
         const searchInput = document.getElementById('searchInput');
         const communeSelect = document.getElementById('communeSelect');
         const searchCount = document.getElementById('searchCount');
         
-        // Base de données élargie des pharmacies de garde en Côte d'Ivoire
+        // Base de données complète de secours
         let toutesLesPharmacies = [
+            // --- BOUAKÉ ---
+            { Nom_pharmacie: "Pharmacie TSF", Quartier: "Air France 2", Commune: "Bouaké", "Téléphone 1": "2731631055" },
+            { Nom_pharmacie: "Pharmacie KoKo", Quartier: "Koko", Commune: "Bouaké", "Téléphone 1": "2731631100" },
+            { Nom_pharmacie: "Pharmacie de la Paix Bouaké", Quartier: "Nimbo", Commune: "Bouaké", "Téléphone 1": "2731634080" },
+            { Nom_pharmacie: "Pharmacie du Centre", Quartier: "Commerce", Commune: "Bouaké", "Téléphone 1": "2731632010" },
+
+            // --- YAMOUSSOUKRO ---
+            { Nom_pharmacie: "Pharmacie Azi", Quartier: "Quartier Commerce", Commune: "Yamoussoukro", "Téléphone 1": "2730642686" },
+            { Nom_pharmacie: "Pharmacie de l'Habitat", Quartier: "Habitat", Commune: "Yamoussoukro", "Téléphone 1": "2730640011" },
+            { Nom_pharmacie: "Pharmacie de la Basilique", Quartier: "Résidentiel", Commune: "Yamoussoukro", "Téléphone 1": "2730645020" },
+
+            // --- SAN-PÉDRO ---
+            { Nom_pharmacie: "Pharmacie du Lac", Quartier: "Bardot", Commune: "San-Pédro", "Téléphone 1": "2734712030" },
+            { Nom_pharmacie: "Pharmacie du Port", Quartier: "Cité", Commune: "San-Pédro", "Téléphone 1": "2734711500" },
+
+            // --- DALOA ---
+            { Nom_pharmacie: "Pharmacie Centrale de Daloa", Quartier: "Labia", Commune: "Daloa", "Téléphone 1": "2733781234" },
+            { Nom_pharmacie: "Pharmacie du Lobia", Quartier: "Commerce", Commune: "Daloa", "Téléphone 1": "2733783010" },
+
+            // --- KORHOGO ---
+            { Nom_pharmacie: "Pharmacie du Poro", Quartier: "Résidentiel", Commune: "Korhogo", "Téléphone 1": "2736861020" },
+            { Nom_pharmacie: "Pharmacie du Marché Korhogo", Quartier: "Koko", Commune: "Korhogo", "Téléphone 1": "2736862540" },
+
+            // --- ABENGOUROU ---
+            { Nom_pharmacie: "Pharmacie de l'Indénié", Quartier: "Indénié", Commune: "Abengourou", "Téléphone 1": "2735913604" },
+            { Nom_pharmacie: "Pharmacie Agni", Quartier: "Agnikro", Commune: "Abengourou", "Téléphone 1": "2735911020" },
+
+            // --- GAGNOA ---
+            { Nom_pharmacie: "Pharmacie de la Paix", Quartier: "Babre", Commune: "Gagnoa", "Téléphone 1": "2732771540" },
+            { Nom_pharmacie: "Pharmacie du Fromager", Quartier: "Garahio", Commune: "Gagnoa", "Téléphone 1": "2732773080" },
+
+            // --- MAN ---
+            { Nom_pharmacie: "Pharmacie des 18 Montagnes", Quartier: "Commerce", Commune: "Man", "Téléphone 1": "2733791020" },
+            { Nom_pharmacie: "Pharmacie du Tonkpi", Quartier: "Gbeupleu", Commune: "Man", "Téléphone 1": "2733792100" },
+
             // --- ABIDJAN : COCODY ---
             { Nom_pharmacie: "Pharmacie Des 2 Plateaux", Quartier: "2 Plateaux", Commune: "Cocody", "Téléphone 1": "2722415020" },
             { Nom_pharmacie: "Pharmacie Saint Jean", Quartier: "Saint Jean", Commune: "Cocody", "Téléphone 1": "2722442510" },
@@ -82,41 +114,6 @@
             { Nom_pharmacie: "Pharmacie Liberté", Quartier: "Gare Nord", Commune: "Adjamé", "Téléphone 1": "2720371040" },
             { Nom_pharmacie: "Pharmacie de la Mairie Abobo", Quartier: "Samaké", Commune: "Abobo", "Téléphone 1": "2724391000" },
 
-            // --- BOUAKÉ ---
-            { Nom_pharmacie: "Pharmacie TSF", Quartier: "Air France 2", Commune: "Bouaké", "Téléphone 1": "2731631055" },
-            { Nom_pharmacie: "Pharmacie KoKo", Quartier: "Koko", Commune: "Bouaké", "Téléphone 1": "2731631100" },
-            { Nom_pharmacie: "Pharmacie de la Paix Bouaké", Quartier: "Nimbo", Commune: "Bouaké", "Téléphone 1": "2731634080" },
-            { Nom_pharmacie: "Pharmacie du Centre", Quartier: "Commerce", Commune: "Bouaké", "Téléphone 1": "2731632010" },
-
-            // --- YAMOUSSOUKRO ---
-            { Nom_pharmacie: "Pharmacie Azi", Quartier: "Quartier Commerce", Commune: "Yamoussoukro", "Téléphone 1": "2730642686" },
-            { Nom_pharmacie: "Pharmacie de l'Habitat", Quartier: "Habitat", Commune: "Yamoussoukro", "Téléphone 1": "2730640011" },
-            { Nom_pharmacie: "Pharmacie de la Basilique", Quartier: "Résidentiel", Commune: "Yamoussoukro", "Téléphone 1": "2730645020" },
-
-            // --- SAN-PÉDRO ---
-            { Nom_pharmacie: "Pharmacie du Lac", Quartier: "Bardot", Commune: "San-Pédro", "Téléphone 1": "2734712030" },
-            { Nom_pharmacie: "Pharmacie du Port", Quartier: "Cité", Commune: "San-Pédro", "Téléphone 1": "2734711500" },
-
-            // --- DALOA ---
-            { Nom_pharmacie: "Pharmacie Centrale de Daloa", Quartier: "Labia", Commune: "Daloa", "Téléphone 1": "2733781234" },
-            { Nom_pharmacie: "Pharmacie du Lobia", Quartier: "Commerce", Commune: "Daloa", "Téléphone 1": "2733783010" },
-
-            // --- KORHOGO ---
-            { Nom_pharmacie: "Pharmacie du Poro", Quartier: "Résidentiel", Commune: "Korhogo", "Téléphone 1": "2736861020" },
-            { Nom_pharmacie: "Pharmacie du Marché Korhogo", Quartier: "Koko", Commune: "Korhogo", "Téléphone 1": "2736862540" },
-
-            // --- MAN ---
-            { Nom_pharmacie: "Pharmacie des 18 Montagnes", Quartier: "Commerce", Commune: "Man", "Téléphone 1": "2733791020" },
-            { Nom_pharmacie: "Pharmacie du Tonkpi", Quartier: "Gbeupleu", Commune: "Man", "Téléphone 1": "2733792100" },
-
-            // --- GAGNOA ---
-            { Nom_pharmacie: "Pharmacie de la Paix", Quartier: "Babre", Commune: "Gagnoa", "Téléphone 1": "2732771540" },
-            { Nom_pharmacie: "Pharmacie du Fromager", Quartier: "Garahio", Commune: "Gagnoa", "Téléphone 1": "2732773080" },
-
-            // --- ABENGOUROU ---
-            { Nom_pharmacie: "Pharmacie de l'Indénié", Quartier: "Indénié", Commune: "Abengourou", "Téléphone 1": "2735913604" },
-            { Nom_pharmacie: "Pharmacie Agni", Quartier: "Agnikro", Commune: "Abengourou", "Téléphone 1": "2735911020" },
-
             // --- AUTRES VILLES ---
             { Nom_pharmacie: "Pharmacie de Bassam", Quartier: "Quartier France", Commune: "Grand-Bassam", "Téléphone 1": "2130102030" },
             { Nom_pharmacie: "Pharmacie du Léboutou", Quartier: "Commerce", Commune: "Dabou", "Téléphone 1": "23571020" },
@@ -128,18 +125,28 @@
 
         async function chargerPharmacies() {
             try {
-                const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                const { data, error } = await supabase.from('Pharmacies').select('*');
-                
-                if (!error && data && data.length > 0) {
-                    toutesLesPharmacies = data;
+                if (window.supabase && SUPABASE_ANON_KEY !== 'VOTRE_CLE_ANON_ICI') {
+                    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    const { data, error } = await supabase.from('Pharmacies').select('*');
+                    
+                    if (!error && data && data.length > 0) {
+                        toutesLesPharmacies = data;
+                    }
                 }
             } catch (err) {
-                console.warn("Utilisation des données locales intégrées.");
+                console.warn("Utilisation de la base locale de secours.");
             } finally {
                 remplirMenuCommunes(toutesLesPharmacies);
                 filtrerEtAfficher();
             }
+        }
+
+        function normaliserTexte(str) {
+            return (str || '')
+                .toString()
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
         }
 
         function remplirMenuCommunes(pharmacies) {
@@ -152,7 +159,7 @@
                 }
             });
 
-            const communesTriees = Array.from(communesSet).sort();
+            const communesTriees = Array.from(communesSet).sort((a, b) => a.localeCompare(b, 'fr'));
 
             communeSelect.innerHTML = '<option value="Toutes">🌍 Toutes les villes et communes</option>';
             communesTriees.forEach(commune => {
@@ -171,7 +178,7 @@
 
         function filtrerEtAfficher() {
             const zoneChoisie = communeSelect.value;
-            const valeurRecherche = searchInput.value.toLowerCase().trim();
+            const valeurRecherche = normaliserTexte(searchInput.value.trim());
 
             const pharmaciesFiltrees = toutesLesPharmacies.filter(p => {
                 const zonePharmacie = (p.Commune || p.Ville || p.Localite || '').trim();
@@ -179,7 +186,7 @@
 
                 let matchTexte = true;
                 if (valeurRecherche) {
-                    const texteGlobal = Object.values(p).join(' ').toLowerCase();
+                    const texteGlobal = normaliserTexte(Object.values(p).join(' '));
                     matchTexte = texteGlobal.includes(valeurRecherche);
                 }
 
@@ -202,10 +209,10 @@
             }
 
             container.innerHTML = pharmacies.map(p => {
-                const nom = p.Nom_pharmacie || 'Pharmacie';
+                const nom = p.Nom_pharmacie || p.Nom || 'Pharmacie';
                 const zone = p.Commune || p.Ville || p.Localite || 'Côte d\'Ivoire';
                 const quartier = p.Quartier || 'Centre';
-                const telephoneBrut = p['Téléphone 1'] || p['Telephone'] || p['Téléphone'] || '';
+                const telephoneBrut = p['Téléphone 1'] || p['Telephone'] || p['Téléphone'] || p['Tel'] || '';
                 
                 let elementContact = `<p class="text-xs text-gray-400 italic">📞 Contact non disponible</p>`;
                 
