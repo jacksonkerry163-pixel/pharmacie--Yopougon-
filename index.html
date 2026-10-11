@@ -6,8 +6,12 @@
     <title>Pharmacies de Garde - Côte d'Ivoire</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col font-sans">
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
     <header class="bg-emerald-600 text-white shadow-md p-4 text-center sticky top-0 z-50">
         <h1 class="text-2xl font-bold tracking-tight">Pharmacies de Garde CI 🇨🇮</h1>
         <p class="text-xs text-emerald-100 mt-1">Trouvez rapidement une pharmacie ouverte en Côte d'Ivoire</p>
@@ -24,7 +28,7 @@
 
             <div>
                 <label for="searchInput" class="block text-xs font-semibold text-gray-600 mb-1">🔍 Recherche rapide :</label>
-                <input type="text" id="searchInput" placeholder="Rechercher par quartier, pharmacie ou ville (ex: Bouaké)..." 
+                <input type="text" id="searchInput" placeholder="Rechercher par quartier, pharmacie ou ville (ex: Bouaké, Niangon, Yopougon)..." 
                        class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-sm">
             </div>
         </div>
@@ -37,25 +41,24 @@
     </main>
 
     <footer class="bg-white border-t py-4 text-center text-xs text-gray-500 mt-auto">
-        &copy; 2026 - Pharmacies de Garde CI &bull; Données vérifiées
+        &copy; 2026 - Pharmacies de Garde CI &bull; Service d'Urgence Côte d'Ivoire
     </footer>
 
     <script>
         const SUPABASE_URL = 'https://bbixpbaeskgsrjawjmpv.supabase.co';
-        const SUPABASE_ANON_KEY = '   eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiaXhwYmFlc2tnc3JqYXdqbXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NTk4OTQsImV4cCI6MjEwNDQzNTg5NH0.rnX2zvR4dt-v9chnWFUUTt8qTGojHd7oiID6vQKvyIo ';
+        const SUPABASE_ANON_KEY = '  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiaXhwYmFlc2tnc3JqYXdqbXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NTk4OTQsImV4cCI6MjEwNDQzNTg5NH0.rnX2zvR4dt-v9chnWFUUTt8qTGojHd7oiID6vQKvyIo  ';
 
         const container = document.getElementById('pharmaciesList');
         const searchInput = document.getElementById('searchInput');
         const communeSelect = document.getElementById('communeSelect');
         const searchCount = document.getElementById('searchCount');
-        
-        // Base de données complète de secours
-        let toutesLesPharmacies = [
+
+        const BASE_PHARMACIES = [
             // --- BOUAKÉ ---
             { Nom_pharmacie: "Pharmacie TSF", Quartier: "Air France 2", Commune: "Bouaké", "Téléphone 1": "2731631055" },
             { Nom_pharmacie: "Pharmacie KoKo", Quartier: "Koko", Commune: "Bouaké", "Téléphone 1": "2731631100" },
             { Nom_pharmacie: "Pharmacie de la Paix Bouaké", Quartier: "Nimbo", Commune: "Bouaké", "Téléphone 1": "2731634080" },
-            { Nom_pharmacie: "Pharmacie du Centre", Quartier: "Commerce", Commune: "Bouaké", "Téléphone 1": "2731632010" },
+            { Nom_pharmacie: "Pharmacie du Centre Bouaké", Quartier: "Commerce", Commune: "Bouaké", "Téléphone 1": "2731632010" },
 
             // --- YAMOUSSOUKRO ---
             { Nom_pharmacie: "Pharmacie Azi", Quartier: "Quartier Commerce", Commune: "Yamoussoukro", "Téléphone 1": "2730642686" },
@@ -117,28 +120,30 @@
             // --- AUTRES VILLES ---
             { Nom_pharmacie: "Pharmacie de Bassam", Quartier: "Quartier France", Commune: "Grand-Bassam", "Téléphone 1": "2130102030" },
             { Nom_pharmacie: "Pharmacie du Léboutou", Quartier: "Commerce", Commune: "Dabou", "Téléphone 1": "23571020" },
-            { Nom_pharmacie: "Pharmacie d'Agboville", Quartier: "Residenciel", Commune: "Agboville", "Téléphone 1": "23541010" },
+            { Nom_pharmacie: "Pharmacie d'Agboville", Quartier: "Résidentiel", Commune: "Agboville", "Téléphone 1": "23541010" },
             { Nom_pharmacie: "Pharmacie de Soubré", Quartier: "Naio", Commune: "Soubré", "Téléphone 1": "2734721020" },
             { Nom_pharmacie: "Pharmacie du Zanzan", Quartier: "Commerce", Commune: "Bondoukou", "Téléphone 1": "2735921030" },
             { Nom_pharmacie: "Pharmacie du Lôh-Djiboua", Quartier: "Bada", Commune: "Divo", "Téléphone 1": "2732761010" }
         ];
 
+        let pharmaciesAffichees = [...BASE_PHARMACIES];
+
         async function chargerPharmacies() {
-            try {
-                if (window.supabase && SUPABASE_ANON_KEY !== 'VOTRE_CLE_ANON_ICI') {
+            if (window.supabase && SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== 'VOTRE_CLE_ANON_ICI') {
+                try {
                     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                     const { data, error } = await supabase.from('Pharmacies').select('*');
                     
                     if (!error && data && data.length > 0) {
-                        toutesLesPharmacies = data;
+                        pharmaciesAffichees = data;
                     }
+                } catch (err) {
+                    console.warn("Utilisation de la base de secours locale.");
                 }
-            } catch (err) {
-                console.warn("Utilisation de la base locale de secours.");
-            } finally {
-                remplirMenuCommunes(toutesLesPharmacies);
-                filtrerEtAfficher();
             }
+            
+            remplirMenuCommunes(pharmaciesAffichees);
+            filtrerEtAfficher();
         }
 
         function normaliserTexte(str) {
@@ -146,16 +151,19 @@
                 .toString()
                 .toLowerCase()
                 .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "");
+                .replace(/[\u0300-\u036f]/g, "")
+                .trim();
         }
 
         function remplirMenuCommunes(pharmacies) {
             const communesSet = new Set();
+            
             pharmacies.forEach(p => {
-                const zone = p.Commune || p.Ville || p.Localite || '';
-                if (zone.trim()) {
-                    const zonePropre = zone.trim().charAt(0).toUpperCase() + zone.trim().slice(1);
-                    communesSet.add(zonePropre);
+                const zone = p.Commune || p.commune || p.Ville || p.ville || p.Localite || p.localite || '';
+                if (zone.toString().trim()) {
+                    const zonePropre = zone.toString().trim();
+                    const zoneFormatee = zonePropre.charAt(0).toUpperCase() + zonePropre.slice(1);
+                    communesSet.add(zoneFormatee);
                 }
             });
 
@@ -163,7 +171,10 @@
 
             communeSelect.innerHTML = '<option value="Toutes">🌍 Toutes les villes et communes</option>';
             communesTriees.forEach(commune => {
-                communeSelect.innerHTML += `<option value="${commune}">${commune}</option>`;
+                const opt = document.createElement('option');
+                opt.value = commune;
+                opt.textContent = commune;
+                communeSelect.appendChild(opt);
             });
         }
 
@@ -178,11 +189,13 @@
 
         function filtrerEtAfficher() {
             const zoneChoisie = communeSelect.value;
-            const valeurRecherche = normaliserTexte(searchInput.value.trim());
+            const valeurRecherche = normaliserTexte(searchInput.value);
 
-            const pharmaciesFiltrees = toutesLesPharmacies.filter(p => {
-                const zonePharmacie = (p.Commune || p.Ville || p.Localite || '').trim();
-                const matchZone = (zoneChoisie === 'Toutes' || zonePharmacie.toLowerCase() === zoneChoisie.toLowerCase());
+            const pharmaciesFiltrees = pharmaciesAffichees.filter(p => {
+                const zonePharmacie = normaliserTexte(p.Commune || p.commune || p.Ville || p.ville || p.Localite || '');
+                const zoneChoisiePropre = normaliserTexte(zoneChoisie);
+                
+                const matchZone = (zoneChoisie === 'Toutes' || zonePharmacie === zoneChoisiePropre);
 
                 let matchTexte = true;
                 if (valeurRecherche) {
@@ -209,10 +222,10 @@
             }
 
             container.innerHTML = pharmacies.map(p => {
-                const nom = p.Nom_pharmacie || p.Nom || 'Pharmacie';
-                const zone = p.Commune || p.Ville || p.Localite || 'Côte d\'Ivoire';
-                const quartier = p.Quartier || 'Centre';
-                const telephoneBrut = p['Téléphone 1'] || p['Telephone'] || p['Téléphone'] || p['Tel'] || '';
+                const nom = p.Nom_pharmacie || p.nom_pharmacie || p.Nom || p.nom || 'Pharmacie';
+                const zone = p.Commune || p.commune || p.Ville || p.ville || 'Côte d\'Ivoire';
+                const quartier = p.Quartier || p.quartier || 'Centre';
+                const telephoneBrut = p['Téléphone 1'] || p['telephone 1'] || p['Telephone'] || p['Téléphone'] || p['Tel'] || p['tel'] || '';
                 
                 let elementContact = `<p class="text-xs text-gray-400 italic">📞 Contact non disponible</p>`;
                 
