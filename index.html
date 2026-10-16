@@ -293,6 +293,15 @@
 
         searchInput.addEventListener('input', filtrerEtAfficher);
         communeSelect.addEventListener('change', filtrerEtAfficher);
+    </script>  
+    <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('MEDIFLOW : service worker activé'))
+        .catch(error => console.error('Erreur service worker :', error));
+    });
+  }
     </script>
 </body>
 </html>
