@@ -1,4 +1,22 @@
-
 {
-  "pharmacies": []
+  "pharmacies": [
+    {
+      "Nom_pharmacie": "Pharmacie Notre Dame de la Paix",
+      "Commune": "Bouaké",
+      "Quartier": "Commerce, grand marché, face à la gare UTB",
+      "Téléphone 1": "0707741382"
+    },
+    {
+      "Nom_pharmacie": "Pharmacie de Gbêkê",
+      "Commune": "Bouaké",
+      "Quartier": "Commerce, face à la BHCI",
+      "Téléphone 1": "2731624076"
+    },
+    {
+      "Nom_pharmacie": "Nouvelle Pharmacie des Champs",
+      "Commune": "Bouaké",
+      "Quartier": "Kamonoukro",
+      "Téléphone 1": "2731633362"
+    }
+  ]
 }
