@@ -294,7 +294,32 @@ const lienMaps = `https://www.google.com/maps/dir/?api=1&destination=${queryMap}
         // Initialisation instantanée
         remplirMenuCommunes(pharmaciesAffichees);
         filtrerEtAfficher();
+         // Charger les pharmacies supplémentaires
+fetch('./pharmacies.json', { cache: 'no-store' })
+  .then(reponse => {
+    if (!reponse.ok) {
+      throw new Error('Chargement impossible');
+    }
+    return reponse.json();
+  })
+  .then(donnees => {
+    const nouvelles = Array.isArray(donnees)
+      ? donnees
+      : donnees.pharmacies;
 
+    if (!Array.isArray(nouvelles) || nouvelles.length === 0) {
+      return;
+    }
+
+    const communeChoisie = communeSelect.value;
+    pharmaciesAffichees = [...BASE_PHARMACIES, ...nouvelles];
+    remplirMenuCommunes(pharmaciesAffichees);
+    communeSelect.value = communeChoisie;
+    filtrerEtAfficher();
+  })
+  .catch(erreur => {
+    console.error('Chargement des pharmacies :', erreur);
+  });
         searchInput.addEventListener('input', filtrerEtAfficher);
         communeSelect.addEventListener('change', filtrerEtAfficher);
     </script>  
