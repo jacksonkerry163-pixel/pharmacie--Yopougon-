@@ -264,8 +264,12 @@
                         </a>`;
                 }
 
-                const queryMap = encodeURIComponent(`${nom} ${quartier} ${zone} Côte d'Ivoire`);
-                const lienMaps = `https://www.google.com/maps/search/?api=1&query=${queryMap}`;
+                
+
+const queryMap = encodeURIComponent(`${nom} ${quartier} ${zone} Côte d'Ivoire`);
+const lienMaps = `https://www.google.com/maps/dir/?api=1&destination=${queryMap}&travelmode=driving`;
+
+                
 
                 return `
                     <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all flex flex-col justify-between">
