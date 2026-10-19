@@ -267,7 +267,11 @@
                 
 
 const queryMap = encodeURIComponent(`${nom} ${quartier} ${zone} Côte d'Ivoire`);
-const lienMaps = `https://www.google.com/maps/dir/?api=1&destination=${queryMap}&travelmode=driving`;
+const lienMaps =
+  nom.trim().toLowerCase() === 'pharmacie tsf' &&
+  zone.trim().toLowerCase() === 'bouaké'
+    ? 'https://maps.app.goo.gl/Twx22seZGeKGqZKT6'
+    : `https://www.google.com/maps/dir/?api=1&destination=${queryMap}&travelmode=driving`;
 
                 
 
