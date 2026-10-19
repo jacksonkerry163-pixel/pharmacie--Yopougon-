@@ -267,12 +267,15 @@
                 
 
 const queryMap = encodeURIComponent(`${nom} ${quartier} ${zone} Côte d'Ivoire`);
+
 const lienMaps =
   nom.trim().toLowerCase() === 'pharmacie tsf' &&
   zone.trim().toLowerCase() === 'bouaké'
     ? 'https://maps.app.goo.gl/Twx22seZGeKGqZKT6'
-    : `https://www.google.com/maps/dir/?api=1&destination=${queryMap}&travelmode=driving`;
-
+    : nom.trim().toLowerCase() === 'pharmacie du lac' &&
+      zone.trim().toLowerCase() === 'san-pédro'
+      ? 'https://maps.app.goo.gl/EtxRUpU4CXfW8WkHA'
+      : `https://www.google.com/maps/dir/?api=1&destination=${queryMap}&travelmode=driving`;
                 
 const localisationNonVerifiee =
   nom.trim().toLowerCase() === 'pharmacie du port' &&
