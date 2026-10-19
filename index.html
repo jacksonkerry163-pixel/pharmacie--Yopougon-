@@ -274,7 +274,9 @@ const lienMaps =
     : `https://www.google.com/maps/dir/?api=1&destination=${queryMap}&travelmode=driving`;
 
                 
-
+const localisationNonVerifiee =
+  nom.trim().toLowerCase() === 'pharmacie du port' &&
+  zone.trim().toLowerCase() === 'san-pédro';
                 return `
                     <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all flex flex-col justify-between">
                         <div>
@@ -284,12 +286,18 @@ const lienMaps =
                             </div>
                             <p class="text-xs font-bold text-emerald-600 mt-1 uppercase">📍 ${zone} - ${quartier}</p>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center gap-2">
-                            <div>${elementContact}</div>
-                            <a href="${lienMaps}" target="_blank" class="inline-flex items-center gap-1 text-xs bg-emerald-600 text-white font-semibold px-3 py-1.5 rounded-lg hover:bg-emerald-700 transition-colors shadow-sm">
-                                🗺️ Itinéraire
-                            </a>
-                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
+  <div>${elementContact}</div>
+  ${localisationNonVerifiee
+    ? '<span class="text-xs text-gray-500">Localisation à vérifier</span>'
+    : `<a href="${lienMaps}" target="_blank"
+          rel="noopener noreferrer"
+          class="text-sm font-bold text-emerald-700">
+         🗺️ Itinéraire
+       </a>`
+  }
+</div>
+                        
                     </div>
                 `;
             }).join('');
